@@ -1,12 +1,16 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-import src.schemas as schemas, src.crud as crud
+from src import schemas, crud
 from src.database import get_db, init_db
 
 
-init_db()
+app = FastAPI(on_startup=[init_db])
 
-app = FastAPI()
+
+# Add health check
+@app.get("/healthcheck/")
+def healthcheck():
+    return {"status": "ok"}
 
 
 @app.get("/books/", response_model=list[schemas.Book])
