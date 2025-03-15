@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-import src.models as models, src.schemas as schemas
+from src import models, schemas
 from src.logger import logging
 
 
@@ -8,7 +8,7 @@ def create_book(db: Session, book: schemas.BookCreate):
         logging.warning(f"Book {book.serial_number} already exists")
         raise ValueError(f"Book {book.serial_number} already exists")
 
-    db_book = models.Book(**book.dict())
+    db_book = models.Book(**book.model_dump())
     db.add(db_book)
     db.commit()
     db.refresh(db_book)
@@ -39,7 +39,7 @@ def update_book_status(
     db_book = get_book(db, book_serial_number)
 
     if db_book:
-        for key, value in book_update.dict(exclude_unset=True).items():
+        for key, value in book_update.model_dump(exclude_unset=True).items():
             setattr(db_book, key, value)
         db.commit()
         db.refresh(db_book)
