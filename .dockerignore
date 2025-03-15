@@ -10,5 +10,4 @@ __pycache__
 docker-compose.yml
 .vscode/
 .idea/
-tests/
 Dockerfile
