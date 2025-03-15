@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, root_validator
+from pydantic import BaseModel, Field, model_validator
 from typing import Optional
 from datetime import date
 
@@ -40,7 +40,7 @@ class BookUpdate(BaseModel):
     )
     borrow_date: Optional[date] = None
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def check_borrow_fields(cls, values):
         if values.get("is_checked_out"):
             if not values.get("borrower_card_number") or not values.get("borrow_date"):
