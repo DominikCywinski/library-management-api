@@ -1,9 +1,10 @@
 from sqlalchemy.orm import Session
+from typing import List, Optional
 from src import models, schemas
 from src.logger import logging
 
 
-def create_book(db: Session, book: schemas.BookCreate):
+def create_book(db: Session, book: schemas.BookCreate) -> schemas.Book:
     if get_book(db, book.serial_number):
         logging.warning(f"Book {book.serial_number} already exists")
         raise ValueError(f"Book {book.serial_number} already exists")
@@ -17,7 +18,7 @@ def create_book(db: Session, book: schemas.BookCreate):
     return db_book
 
 
-def get_book(db: Session, book_serial_number: str):
+def get_book(db: Session, book_serial_number: str) -> Optional[schemas.Book]:
     """
     Get book by serial number
     """
@@ -29,13 +30,13 @@ def get_book(db: Session, book_serial_number: str):
     )
 
 
-def get_books(db: Session):
+def get_books(db: Session) -> List[schemas.Book]:
     return db.query(models.Book).all()
 
 
 def update_book_status(
     db: Session, book_serial_number: str, book_update: schemas.BookUpdate
-):
+) -> Optional[schemas.Book]:
     db_book = get_book(db, book_serial_number)
 
     if db_book:
@@ -50,7 +51,7 @@ def update_book_status(
     return db_book
 
 
-def delete_book(db: Session, book_serial_number: str):
+def delete_book(db: Session, book_serial_number: str) -> Optional[schemas.Book]:
     """
     Delete book by serial number
     """
