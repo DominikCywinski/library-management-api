@@ -34,7 +34,7 @@ def get_books(db: Session):
 
 
 def update_book_status(
-    db: Session, book_serial_number: int, book_update: schemas.BookUpdate
+    db: Session, book_serial_number: str, book_update: schemas.BookUpdate
 ):
     db_book = get_book(db, book_serial_number)
 
@@ -50,7 +50,7 @@ def update_book_status(
     return db_book
 
 
-def delete_book(db: Session, book_serial_number: int):
+def delete_book(db: Session, book_serial_number: str):
     """
     Delete book by serial number
     """

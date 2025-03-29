@@ -27,7 +27,7 @@ def create_book(book: schemas.BookCreate, db: Session = Depends(get_db)):
 
 
 @app.delete("/books/{book_serial_number}", response_model=schemas.Book)
-def delete_book(book_serial_number: int, db: Session = Depends(get_db)):
+def delete_book(book_serial_number: str, db: Session = Depends(get_db)):
     book = crud.delete_book(db, book_serial_number)
     if book is None:
         raise HTTPException(
@@ -39,7 +39,7 @@ def delete_book(book_serial_number: int, db: Session = Depends(get_db)):
 
 @app.patch("/books/{book_serial_number}", response_model=schemas.Book)
 def update_book_status(
-    book_serial_number: int,
+    book_serial_number: str,
     book_update: schemas.BookUpdate,
     db: Session = Depends(get_db),
 ):

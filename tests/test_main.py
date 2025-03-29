@@ -8,7 +8,6 @@ from src.database import Base, get_db
 
 
 # SQLite database URL for testing
-# SQLITE_DATABASE_URL = "sqlite:///./test_db.db"
 SQLITE_DATABASE_URL = "sqlite:///:memory:"
 
 # Create a SQLAlchemy engine
@@ -62,7 +61,7 @@ def get_valid_book():
     return {
         "title": "Test Book",
         "author": "Test Author",
-        "serial_number": 999991,
+        "serial_number": "999991",
     }
 
 
@@ -98,7 +97,7 @@ def test_create_invalid_book(test_client):
     book = {
         "title": "Test Invalid Book",
         "author": "Test Author",
-        "serial_number": 123,
+        "serial_number": "123",
     }
     response = test_client.post(
         "/books/",
@@ -128,7 +127,7 @@ def test_valid_update_book_status(test_client):
         "/books/999991",
         json={
             "is_checked_out": True,
-            "borrower_card_number": 123456,
+            "borrower_card_number": "123456",
             "borrow_date": "2023-01-01",
         },
     )
