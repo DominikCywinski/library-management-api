@@ -10,9 +10,9 @@ class Book(Base):
     __tablename__ = "books"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    serial_number = Column(Integer, unique=True, index=True, nullable=False)
+    serial_number = Column(String(6), unique=True, index=True, nullable=False)
     title = Column(String, nullable=False)
     author = Column(String, nullable=False)
     is_checked_out = Column(Boolean, default=False)
-    borrower_card_number = Column(Integer, nullable=True)
+    borrower_card_number = Column(String(6), nullable=True)
     borrow_date = Column(Date, nullable=True)

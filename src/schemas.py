@@ -13,8 +13,12 @@ class BookBase(BaseModel):
 
     title: str
     author: str
-    serial_number: int = Field(
-        ..., ge=100000, le=999999, description="6-digit serial number"
+    serial_number: str = Field(
+        ...,
+        min_length=6,
+        max_length=6,
+        pattern=r"^\d{6}$",
+        description="6-digit serial number",
     )
 
 
@@ -32,10 +36,11 @@ class BookUpdate(BaseModel):
     """
 
     is_checked_out: bool
-    borrower_card_number: Optional[int] = Field(
+    borrower_card_number: Optional[str] = Field(
         None,
-        ge=100000,
-        le=999999,
+        min_length=6,
+        max_length=6,
+        pattern=r"^\d{6}$",
         description="6-digit user card number",
     )
     borrow_date: Optional[date] = None

@@ -17,7 +17,7 @@ def create_book(db: Session, book: schemas.BookCreate):
     return db_book
 
 
-def get_book(db: Session, book_serial_number: int):
+def get_book(db: Session, book_serial_number: str):
     """
     Get book by serial number
     """
