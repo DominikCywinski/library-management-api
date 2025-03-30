@@ -34,19 +34,46 @@ def get_books(db: Session) -> List[schemas.Book]:
     return db.query(models.Book).all()
 
 
-def update_book_status(
-    db: Session, book_serial_number: str, book_update: schemas.BookUpdate
+def checkout_book(
+    db: Session, book_serial_number: str, checkout_data: schemas.BookCheckout
 ) -> Optional[schemas.Book]:
     db_book = get_book(db, book_serial_number)
 
-    if db_book:
-        for key, value in book_update.model_dump(exclude_unset=True).items():
-            setattr(db_book, key, value)
-        db.commit()
-        db.refresh(db_book)
-        logging.info(f"Book {book_serial_number} updated")
-    else:
+    if not db_book:
         logging.warning(f"Book {book_serial_number} not found")
+        return None
+
+    if db_book.is_checked_out:
+        logging.warning(f"Book {book_serial_number} is already checked out")
+        raise ValueError("Book is already checked out")
+
+    db_book.is_checked_out = True
+    db_book.borrower_card_number = checkout_data.borrower_card_number
+    db_book.borrow_date = checkout_data.borrow_date
+    db.commit()
+    db.refresh(db_book)
+    logging.info(f"Book {book_serial_number} checked out")
+
+    return db_book
+
+
+def return_book(db: Session, book_serial_number: str) -> Optional[schemas.Book]:
+    db_book = get_book(db, book_serial_number)
+
+    if not db_book:
+        logging.warning(f"Book {book_serial_number} not found")
+        return None
+
+    if not db_book.is_checked_out:
+        logging.warning(f"Book {book_serial_number} is not checked out")
+        raise ValueError("Book is not checked out")
+
+    db_book.is_checked_out = False
+    db_book.borrower_card_number = None
+    db_book.borrow_date = None
+    db.commit()
+    db.refresh(db_book)
+    logging.info(f"Book {book_serial_number} returned")
 
     return db_book
 

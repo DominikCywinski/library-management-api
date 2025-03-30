@@ -36,14 +36,34 @@ def read_book(serial_number: str, db: Session = Depends(get_db)) -> schemas.Book
     return db_book
 
 
-@router.patch("/books/{serial_number}", response_model=schemas.Book, tags=["books"])
-def update_book_status(
-    serial_number: str, book_update: schemas.BookUpdate, db: Session = Depends(get_db)
+@router.post(
+    "/books/{serial_number}/checkout", response_model=schemas.Book, tags=["books"]
+)
+def checkout_book(
+    serial_number: str,
+    checkout_data: schemas.BookCheckout,
+    db: Session = Depends(get_db),
 ) -> schemas.Book:
-    db_book = crud.update_book_status(db, serial_number, book_update)
-    if db_book is None:
-        raise HTTPException(status_code=404, detail="Book not found")
-    return db_book
+    try:
+        db_book = crud.checkout_book(db, serial_number, checkout_data)
+        if db_book is None:
+            raise HTTPException(status_code=404, detail="Book not found")
+        return db_book
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post(
+    "/books/{serial_number}/return", response_model=schemas.Book, tags=["books"]
+)
+def return_book(serial_number: str, db: Session = Depends(get_db)) -> schemas.Book:
+    try:
+        db_book = crud.return_book(db, serial_number)
+        if db_book is None:
+            raise HTTPException(status_code=404, detail="Book not found")
+        return db_book
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.delete("/books/{serial_number}", response_model=schemas.Book, tags=["books"])
