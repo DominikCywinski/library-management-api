@@ -41,3 +41,10 @@ including adding, deleting, and updating the availability of books.
     ```
 
 3. The application will be running at `http://localhost:8000`. You can interact with the API using `http://localhost:8000/docs`
+
+## Testing
+To run the tests, run the following command:
+
+```bash
+docker compose exec api pytest tests/ -v
+```
