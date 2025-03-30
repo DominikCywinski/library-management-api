@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from typing import List
 
 from src import schemas, crud
 from src.database import get_db
@@ -13,9 +12,14 @@ def healthcheck() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@router.get("/books/", response_model=List[schemas.Book], tags=["books"])
-def get_books(db: Session = Depends(get_db)) -> List[schemas.Book]:
-    return crud.get_books(db)
+@router.get("/books/", response_model=schemas.PaginatedBooks, tags=["books"])
+def get_books(
+    skip: int = Query(0, ge=0, description="Number of items to skip"),
+    limit: int = Query(100, ge=1, le=1000, description="Max 1000 items"),
+    db: Session = Depends(get_db),
+):
+
+    return crud.get_books(db, skip=skip, limit=limit)
 
 
 @router.post("/books/", response_model=schemas.Book, tags=["books"])

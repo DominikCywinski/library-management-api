@@ -30,8 +30,18 @@ def get_book(db: Session, book_serial_number: str) -> Optional[schemas.Book]:
     )
 
 
-def get_books(db: Session) -> List[schemas.Book]:
-    return db.query(models.Book).all()
+def get_books(db: Session, skip: int, limit: int) -> dict:
+    if skip < 0 or limit <= 0:
+        raise ValueError("Invalid pagination parameters")
+
+    total = db.query(models.Book).count()
+
+    if skip >= total and total > 0:
+        raise ValueError("Skip value exceeds total items")
+
+    books = db.query(models.Book).offset(skip).limit(limit).all()
+
+    return {"items": books, "total": total, "skip": skip, "limit": limit}
 
 
 def checkout_book(

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, model_validator
-from typing import Optional
+from typing import List, Optional
 from datetime import date
 
 
@@ -11,8 +11,8 @@ class BookBase(BaseModel):
     - `serial_number`: The serial number of the book. It is validated to be a 6-digit integer.
     """
 
-    title: str
-    author: str
+    title: str = Field(..., min_length=1, max_length=100)
+    author: str = Field(..., min_length=1, max_length=100)
     serial_number: str = Field(
         ...,
         min_length=6,
@@ -59,3 +59,10 @@ class Book(BookBase):
 
     class Config:
         orm_mode = True
+
+
+class PaginatedBooks(BaseModel):
+    items: List[Book]
+    total: int
+    skip: int
+    limit: int

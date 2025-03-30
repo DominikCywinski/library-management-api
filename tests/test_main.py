@@ -82,7 +82,9 @@ def test_health_check(test_client):
 def test_is_library_empty(test_client):
     response = test_client.get("/books/")
     assert response.status_code == 200
-    assert len(response.json()) == 0
+    data = response.json()
+    assert len(data["items"]) == 0
+    assert data["total"] == 0
 
 
 def test_create_valid_book(test_client):
@@ -234,7 +236,7 @@ def test_checkout_with_invalid_data(test_client):
 
     # Try checkout with invalid card number format
     invalid_data = {
-        "borrower_card_number": "123",  # Too short
+        "borrower_card_number": "123",
         "borrow_date": "2023-01-01",
     }
     response = test_client.post(
@@ -243,3 +245,17 @@ def test_checkout_with_invalid_data(test_client):
     )
 
     assert response.status_code == 422
+
+
+def test_pagination(test_client):
+    for i in range(1, 6):
+        book = get_valid_book()
+        book["serial_number"] = f"99999{i}"
+        test_client.post("/books/", json=book)
+
+    response = test_client.get("/books/?skip=2&limit=2")
+    data = response.json()
+    assert len(data["items"]) == 2
+    assert data["total"] == 5
+    assert data["skip"] == 2
+    assert data["limit"] == 2
